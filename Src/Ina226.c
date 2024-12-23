@@ -1,3 +1,9 @@
+/*
+ * INA226.c
+ *
+ *  Created on: Dec 9, 2024
+ *      Author: Nate Hunter
+ */
 #include "Ina226.h"
 #define CONFIG_REGISTER 0x00
 #define CALIBRATION_REGISTER 0x05

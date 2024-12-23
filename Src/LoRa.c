@@ -2,7 +2,7 @@
  * LoRa_new.h
  *
  *  Created on: Nov 29, 2024
- *      Author: oppp0
+ *      Author: Nate Hunter
  */
 #include "LoRa.h"
 
