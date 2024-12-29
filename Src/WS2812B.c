@@ -28,9 +28,17 @@ uint8_t WS2812B_Init(WS2812B_Strip *strip) {
         return 0;
     }
 
-    memset(strip->dma_buffer, WS2812B_LOW_P, (strip->buffer_length - WS2812B_DELAY_LEN) * sizeof(uint32_t));
-    memset(strip->dma_buffer + (strip->buffer_length - WS2812B_DELAY_LEN), 0, WS2812B_DELAY_LEN * sizeof(uint32_t));
-
+  	uint32_t i;
+  	for(i = 0; i < strip->buffer_length - WS2812B_DELAY_LEN; i++) {
+  		strip->dma_buffer[i] = WS2812B_LOW_P;
+  	}
+  	for(; i < strip->buffer_length; i++) {
+  		strip->dma_buffer[i] = 0;
+  	}
+  	RGB_Color rgb = {.r=255,.g=255,.b=255};
+  	WS2812B_Fill(strip, &rgb);
+  	HAL_StatusTypeDef res = HAL_TIM_PWM_Start_DMA(strip->tim, strip->channel, strip->dma_buffer, strip->buffer_length);
+  	HAL_Delay(1);
     return 1;
 }
 
