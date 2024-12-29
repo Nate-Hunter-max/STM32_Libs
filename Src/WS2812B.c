@@ -37,7 +37,7 @@ uint8_t WS2812B_Init(WS2812B_Strip *strip) {
   	}
   	RGB_Color rgb = {.r=255,.g=255,.b=255};
   	WS2812B_Fill(strip, &rgb);
-  	HAL_StatusTypeDef res = HAL_TIM_PWM_Start_DMA(strip->tim, strip->channel, strip->dma_buffer, strip->buffer_length);
+  	HAL_TIM_PWM_Start_DMA(strip->tim, strip->channel, strip->dma_buffer, strip->buffer_length);
   	HAL_Delay(1);
     return 1;
 }
