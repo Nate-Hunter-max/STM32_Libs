@@ -1,24 +1,55 @@
-/*
- * CircularBuffer.h
- *
- *  Created on: May 10, 2024
- *      Author: Nate Hunter
- */
-
 #pragma once
 #include <stdlib.h>
 #include <stdint.h>
+
+/**
+ * @brief Circular buffer structure for generic data types.
+ */
 typedef struct {
-	uint32_t *data;
-	uint8_t size;
-	uint8_t head;
-	uint8_t tail;
+	void *data;            /**< Pointer to the buffer memory. */
+	uint8_t size;          /**< Maximum number of elements in the buffer. */
+	uint8_t item_size;   	/**< Size of a single element in bytes. */
+	uint8_t head;          /**< Index of the oldest element. */
+	uint8_t tail;          /**< Index of the next free position. */
 } CircularBuffer;
 
-CircularBuffer* CB_Create(uint8_t size);
+/**
+ * @brief Create a circular buffer.
+ *
+ * @param buffer Pointer to buffer structure.
+ */
+void CB_Init(CircularBuffer *buffer);
 
+/**
+ * @brief Free the memory allocated for the circular buffer.
+ *
+ * @param buffer Pointer to the buffer.
+ */
 void CB_Free(CircularBuffer *buffer);
 
-void CB_Add(CircularBuffer *buffer, int measurement);
+/**
+ * @brief Add an item to the circular buffer.
+ *
+ * @param buffer Pointer to the buffer.
+ * @param item Pointer to the item to add.
+ */
+void CB_Add(CircularBuffer *buffer, const void *item);
 
-uint32_t CB_Diff(CircularBuffer *buffer);
+/**
+ * @brief Calculate the maximum difference between consecutive elements.
+ *
+ * @param buffer Pointer to the buffer.
+ * @param compare Function pointer for comparison logic.
+ * @return uint32_t Maximum difference found.
+ */
+uint32_t CB_Diff(CircularBuffer *buffer, uint32_t (*compare)(const void*, const void*));
+
+/**
+ * @brief Calculate the average value of all elements in the buffer.
+ *
+ * @param buffer Pointer to the buffer.
+ * @param sum Function pointer to sum two elements.
+ * @param divide Function pointer to divide the sum by the count.
+ * @return uint32_t Average value of the elements.
+ */
+uint32_t CB_Average(CircularBuffer *buffer, uint32_t (*sum)(const void*, const void*), uint32_t (*divide)(const void*, uint32_t));
