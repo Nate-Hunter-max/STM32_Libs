@@ -86,7 +86,7 @@ uint8_t W25Qx_EraseSector(W25Qx_Device *dev, uint32_t address);
  * @param length Number of bytes to read.
  * @return 1 if the operation succeeds, 0 otherwise.
  */
-uint8_t W25Qx_ReadData(W25Qx_Device *dev, uint32_t address, uint8_t *buffer, uint32_t length);
+uint8_t W25Qx_ReadData(W25Qx_Device *dev, uint32_t address, void *buffer, uint32_t length);
 
 /**
  * @brief Write data to the W25Qx device.
@@ -97,7 +97,7 @@ uint8_t W25Qx_ReadData(W25Qx_Device *dev, uint32_t address, uint8_t *buffer, uin
  * @param length Number of bytes to write.
  * @return 1 if the operation succeeds, 0 otherwise.
  */
-uint8_t W25Qx_WriteData(W25Qx_Device *dev, uint32_t address, const uint8_t *buffer, uint32_t length);
+uint8_t W25Qx_WriteData(W25Qx_Device *dev, uint32_t address, const void *buffer, uint32_t length);
 
 /**
  * @brief Erase the entire chip.
