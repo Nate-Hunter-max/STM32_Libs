@@ -2,11 +2,12 @@
  * @file W25Qx.h
  * @brief Header file for Winbond W25Qx SPI Flash memory driver.
  *
- *  Created on: Dec 29, 2024
- *      Author: Nate Hunter
- *
  * This header declares the functions and structures for interacting with
  * W25Qx series SPI Flash memory devices.
+ *
+ * @author [Nate Hunter]
+ * @date [29.12.2024]
+ * @version 1.0
  */
 
 #ifndef W25QX_H
