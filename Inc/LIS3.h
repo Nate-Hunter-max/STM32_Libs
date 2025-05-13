@@ -51,6 +51,12 @@
 #define LIS_CYCLIC       0b00
 #define LIS_SINGLE       0b01
 #define LIS_STBY         0b10
+
+#define LIS_CTRL1 0
+#define LIS_CTRL2 1
+#define LIS_CTRL3 2
+#define LIS_CTRL4 3
+#define LIS_CTRL5 4
 /// @}
 
 #ifdef LIS3_USE_SPI
