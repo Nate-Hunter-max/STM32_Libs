@@ -88,18 +88,40 @@ void LSM6_ConfigAG(uint8_t A_CFG, uint8_t G_CFG) {
  * @param gyro Pointer to 3-element array for gyro (dps)
  */
 void LSM6_Read(float *accel, float *gyro) {
-	int16_t raw[6];
+    int16_t temp[3];
+
 #ifdef LSM6_USE_SPI
-	_NSS_Port->ODR &= ~_NSS_Pin;
-	txbuf[0] = LSM6_READ_BIT | LSM6_OUTX_L_G;
-	HAL_SPI_Transmit(spi, txbuf, 1, 1000);
-	HAL_SPI_Receive(spi, (uint8_t*)raw, 12, 1000);
-	_NSS_Port->ODR |= _NSS_Pin;
+    _NSS_Port->ODR &= ~_NSS_Pin;
+
+    // Read gyroscope
+    txbuf[0] = LSM6_READ_BIT | LSM6_OUTX_L_G;
+    HAL_SPI_Transmit(spi, txbuf, 1, 1000);
+    for (uint8_t i = 0; i < 3; i++) {
+        HAL_SPI_Receive(spi, (uint8_t*)&temp[i], 2, 1000);
+        gyro[i] = (float)temp[i] * lsm6SensG[_fsGyro];
+    }
+
+    // Read accelerometer
+    txbuf[0] = LSM6_READ_BIT | LSM6_OUTX_L_XL;
+    HAL_SPI_Transmit(spi, txbuf, 1, 1000);
+    for (uint8_t i = 0; i < 3; i++) {
+        HAL_SPI_Receive(spi, (uint8_t*)&temp[i], 2, 1000);
+        accel[i] = (float)temp[i] * lsm6SensA[_fsAccel];
+    }
+
+    _NSS_Port->ODR |= _NSS_Pin;
 #else
-	HAL_I2C_Mem_Read(i2c, _i2c_addr, LSM6_OUTX_L_G, I2C_MEMADD_SIZE_8BIT, (uint8_t*)raw, 12, 1000);
+    // Read gyroscope
+    HAL_I2C_Mem_Read(i2c, _i2c_addr, LSM6_OUTX_L_G, I2C_MEMADD_SIZE_8BIT, (uint8_t*)temp, 6, 1000);
+    for (uint8_t i = 0; i < 3; i++) {
+        gyro[i] = (float)temp[i] * lsm6SensG[_fsGyro];
+    }
+
+    // Read accelerometer
+    HAL_I2C_Mem_Read(i2c, _i2c_addr, LSM6_OUTX_L_XL, I2C_MEMADD_SIZE_8BIT, (uint8_t*)temp, 6, 1000);
+    for (uint8_t i = 0; i < 3; i++) {
+        accel[i] = (float)temp[i] * lsm6SensA[_fsAccel];
+    }
 #endif
-	for (uint8_t i = 0; i < 3; i++) {
-		gyro[i] = (float)raw[i] * lsm6SensG[_fsGyro];
-		accel[i] = (float)raw[i + 3] * lsm6SensA[_fsAccel];
-	}
 }
+
