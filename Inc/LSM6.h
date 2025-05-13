@@ -11,10 +11,10 @@
 
 #include "main.h"
 
-#ifdef USE_SPI
-#elif defined(USE_I2C)
+#ifdef LSM6_USE_SPI
+#elif defined(LSM6_USE_I2C)
 #else
-#error "LSM6: Please define USE_SPI or USE_I2C"
+#error "LSM6: Please define LSM6_USE_SPI or LSM6_USE_I2C"
 #endif
 
 
