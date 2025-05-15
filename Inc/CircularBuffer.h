@@ -1,4 +1,15 @@
-#pragma once
+/**
+ * @file CircularBuffer.h
+ * @brief Generic circular buffer
+ *
+ * @author [Crypto Schizo]
+ * @date [15.05.2025]
+ * @version 1.1
+ */
+
+#ifndef CIRCULAR_BUFFER_H
+#define CIRCULAR_BUFFER_H
+
 #include <stdlib.h>
 #include <stdint.h>
 
@@ -28,12 +39,21 @@ void CB_Init(CircularBuffer *buffer);
 void CB_Free(CircularBuffer *buffer);
 
 /**
- * @brief Add an item to the circular buffer.
+ * @brief Push an item to the circular buffer.
  *
  * @param buffer Pointer to the buffer.
  * @param item Pointer to the item to add.
  */
-void CB_Add(CircularBuffer *buffer, const void *item);
+void CB_Push(CircularBuffer *buffer, const void *item);
+
+/**
+ * @brief Pop an item from the circular buffer.
+ *
+ * @param buffer Pointer to the buffer.
+ * @param item Pointer to store the popped item.
+ * @return int 1 if successful, 0 if buffer is empty.
+ */
+uint8_t CB_Pop(CircularBuffer *buffer, void *item);
 
 /**
  * @brief Calculate the maximum difference between consecutive elements.
@@ -53,3 +73,5 @@ uint32_t CB_Diff(CircularBuffer *buffer, uint32_t (*compare)(const void*, const 
  * @return uint32_t Average value of the elements.
  */
 uint32_t CB_Average(CircularBuffer *buffer, uint32_t (*sum)(const void*, const void*), uint32_t (*divide)(const void*, uint32_t));
+
+#endif // CIRCULAR_BUFFER_H

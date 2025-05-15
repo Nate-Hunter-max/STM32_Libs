@@ -29,17 +29,33 @@ void CB_Free(CircularBuffer *buffer) {
 }
 
 /**
- * @brief Add an item to the circular buffer.
+ * @brief Push an item to the circular buffer.
  *
  * @param buffer Pointer to the buffer.
  * @param item Pointer to the item to add.
  */
-void CB_Add(CircularBuffer *buffer, const void *item) {
+void CB_Push(CircularBuffer *buffer, const void *item) {
     memcpy((char*)buffer->data + (buffer->tail * buffer->item_size), item, buffer->item_size);
     buffer->tail = (buffer->tail + 1) % buffer->size;
     if(buffer->tail == buffer->head) {
         buffer->head = (buffer->head + 1) % buffer->size;
     }
+}
+
+/**
+ * @brief Pop an item from the circular buffer.
+ *
+ * @param buffer Pointer to the buffer.
+ * @param item Pointer to store the popped item.
+ * @return int 1 if successful, 0 if buffer is empty.
+ */
+uint8_t CB_Pop(CircularBuffer *buffer, void *item) {
+    if (buffer->head == buffer->tail) {
+        return 0; // Buffer is empty
+    }
+    memcpy(item, (char*)buffer->data + (buffer->head * buffer->item_size), buffer->item_size);
+    buffer->head = (buffer->head + 1) % buffer->size;
+    return 1;
 }
 
 /**
@@ -88,4 +104,3 @@ uint32_t CB_Average(CircularBuffer *buffer, uint32_t (*sum)(const void*, const v
 
     return divide(&total, count);
 }
-
