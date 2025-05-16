@@ -93,6 +93,7 @@ void LIS3_Read(float *mag) {
 	}
 
 #ifdef LIS3_USE_SPI
+	UNUSED(reg);
 	uint8_t cmd = LIS_READ_BIT | LIS_STATUS;
 	while (!(status & (1 << 3))) {
 		_NSS_Port->ODR &= ~_NSS_Pin;
