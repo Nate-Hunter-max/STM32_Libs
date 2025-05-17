@@ -4,7 +4,7 @@
  *
  * @author [Nate Hunter]
  * @date [12.05.2025]
- * @version 1.1
+ * @version 1.2
  */
 
 #pragma once

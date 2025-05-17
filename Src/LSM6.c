@@ -45,9 +45,9 @@ uint8_t LSM6_Init(void *interface, void *port_or_addr, uint16_t pin_or_addr) {
 
 #ifdef LSM6_USE_SPI
 	_NSS_Port->ODR &= ~_NSS_Pin;
-	txbuf[0] = LSM6_CTRL3_C;
+	txbuf[0] = LSM6_CTRL1_XL + 2;
 	HAL_SPI_Transmit(spi, txbuf, 1, 1000);
-	txbuf[0] = (1 << 6); // BDU enable
+	txbuf[0] = (1 << 6) | 1; //enable Block Data Update in ctrl3;
 	HAL_SPI_Transmit(spi, txbuf, 1, 1000);
 	_NSS_Port->ODR |= _NSS_Pin;
 #else
@@ -69,8 +69,6 @@ void LSM6_ConfigAG(uint8_t A_CFG, uint8_t G_CFG) {
 	txbuf[0] = LSM6_CTRL1_XL;
 	HAL_SPI_Transmit(spi, txbuf, 1, 1000);
 	HAL_SPI_Transmit(spi, &A_CFG, 1, 1000);
-	txbuf[0] = LSM6_CTRL2_G;
-	HAL_SPI_Transmit(spi, txbuf, 1, 1000);
 	HAL_SPI_Transmit(spi, &G_CFG, 1, 1000);
 	_NSS_Port->ODR |= _NSS_Pin;
 #else
@@ -88,28 +86,24 @@ void LSM6_ConfigAG(uint8_t A_CFG, uint8_t G_CFG) {
  * @param gyro Pointer to 3-element array for gyro (dps)
  */
 void LSM6_Read(float *accel, float *gyro) {
-    int16_t temp[3];
-
+  int16_t temp[3];
 #ifdef LSM6_USE_SPI
-    _NSS_Port->ODR &= ~_NSS_Pin;
+	_NSS_Port->ODR &= ~_NSS_Pin;
+	
+	txbuf[0] = LSM6_READ_BIT | LSM6_OUTX_L_G;
+	HAL_SPI_Transmit(spi, txbuf, 1, 1000);
 
-    // Read gyroscope
-    txbuf[0] = LSM6_READ_BIT | LSM6_OUTX_L_G;
-    HAL_SPI_Transmit(spi, txbuf, 1, 1000);
-    for (uint8_t i = 0; i < 3; i++) {
-        HAL_SPI_Receive(spi, (uint8_t*)&temp[i], 2, 1000);
-        gyro[i] = (float)temp[i] * lsm6SensG[_fsGyro];
-    }
+	for(*txbuf = 0; *txbuf < 3; (*txbuf)++) {
+		HAL_SPI_Receive(spi, (uint8_t*) (temp + *txbuf), 2, 1000);
+		gyro[*txbuf] = (float) temp[*txbuf] * lsm6SensG[_fsGyro];
+	}
 
-    // Read accelerometer
-    txbuf[0] = LSM6_READ_BIT | LSM6_OUTX_L_XL;
-    HAL_SPI_Transmit(spi, txbuf, 1, 1000);
-    for (uint8_t i = 0; i < 3; i++) {
-        HAL_SPI_Receive(spi, (uint8_t*)&temp[i], 2, 1000);
-        accel[i] = (float)temp[i] * lsm6SensA[_fsAccel];
-    }
+	for(*txbuf = 0; *txbuf < 3; (*txbuf)++) {
+		HAL_SPI_Receive(spi, (uint8_t*) (temp + *txbuf), 2, 1000);
+		accel[*txbuf] = (float) temp[*txbuf] * lsm6SensA[_fsAccel];
+	}
 
-    _NSS_Port->ODR |= _NSS_Pin;
+	_NSS_Port->ODR |= _NSS_Pin;
 #else
     // Read gyroscope
     HAL_I2C_Mem_Read(i2c, _i2c_addr, LSM6_OUTX_L_G, I2C_MEMADD_SIZE_8BIT, (uint8_t*)temp, 6, 1000);
@@ -124,4 +118,3 @@ void LSM6_Read(float *accel, float *gyro) {
     }
 #endif
 }
-
